@@ -86,13 +86,52 @@ var jsPsychInstructions = (function (jspsych) {
           var view_history = [];
           var start_time = performance.now();
           var last_page_update_time = start_time;
+          var wrapper = undefined;
           function btnListener(evt) {
-              evt.target.removeEventListener("click", btnListener);
               if (this.id === "jspsych-instructions-back") {
+                  evt.target.removeEventListener("click", btnListener);
                   back();
               }
+              else if (this.classList.contains("example-button")) {
+                evt.target.removeEventListener("click", btnListener);
+                next();
+              }
               else if (this.id === "jspsych-instructions-next") {
-                  next();
+                  var consent = display_element.querySelector("#consent_checkbox");
+                  var example_buttons = display_element.querySelector("#example-button-container");
+                  if (consent !== null) {
+                    if (consent.checked === true) {
+                      evt.target.removeEventListener("click", btnListener);
+                      next();
+                    }
+                    else if (this.wrapper === undefined) {
+                      this.wrapper = document.createElement('div')
+                      this.wrapper.innerHTML = [
+                        `<div class="alert alert-danger" role="alert">`,
+                        `   <div>Marque la casilla <strong>Sí quiero participar</strong> para continuar</div>`,
+                        '</div>'
+                      ].join('');
+                      consent.parentNode.parentNode.parentNode.insertBefore(this.wrapper, consent.parentNode.parentNode);
+                    }
+                  }
+                  else if (example_buttons !== null) {
+                    if (this.wrapper === undefined) {
+                      this.wrapper = document.createElement('div');
+                      this.wrapper.innerHTML = [
+                        `<div class="alert alert-danger" role="alert">`,
+                        `   <div>Seleccione una opción de <strong>1 a 7</strong> para continuar</div>`,
+                        '</div>'
+                      ].join('');
+                      example_buttons.parentNode.insertBefore(this.wrapper, example_buttons);
+                    }
+                  }
+                  else {
+                    evt.target.removeEventListener("click", btnListener);
+                    next();
+                  }
+              }
+              else {
+                evt.target.removeEventListener("click", btnListener);
               }
           }
           function show_current_page() {
@@ -114,9 +153,9 @@ var jsPsychInstructions = (function (jspsych) {
                   if (trial.allow_backward) {
                       var allowed = current_page > 0 ? "" : "disabled='disabled'";
                       nav_html +=
-                          "<button id='jspsych-instructions-back' class='jspsych-btn' style='margin-right: 5px;' " +
+                          "<button id='jspsych-instructions-back' class='btn btn-outline-secondary' style='margin-right: 5px;' " +
                               allowed +
-                              ">&lt; " +
+                              ">" +
                               trial.button_label_previous +
                               "</button>";
                   }
@@ -124,10 +163,10 @@ var jsPsychInstructions = (function (jspsych) {
                       nav_html += pagenum_display;
                   }
                   nav_html +=
-                      "<button id='jspsych-instructions-next' class='jspsych-btn'" +
+                      "<button id='jspsych-instructions-next' class='btn btn-primary'" +
                           "style='margin-left: 5px;'>" +
                           trial.button_label_next +
-                          " &gt;</button></div>";
+                          "</button></div>";
                   html += nav_html;
                   display_element.innerHTML = html;
                   if (current_page != 0 && trial.allow_backward) {
@@ -146,6 +185,9 @@ var jsPsychInstructions = (function (jspsych) {
                   }
                   display_element.innerHTML = html;
               }
+              display_element
+                  .querySelectorAll(".example-button")
+                  .forEach(x => x.addEventListener("click", btnListener));
           }
           function next() {
               add_current_page_to_view_history();
@@ -222,67 +264,23 @@ var jsPsychInstructions = (function (jspsych) {
           }
       }
       create_simulation_data(trial, simulation_options) {
-          var _a, _b, _c, _d, _e, _f;
           let curr_page = 0;
           let rt = 0;
-          let view_history = [];
-          // if there is no view history and no RT, simulate a random walk through the pages
-          if (!((_a = simulation_options.data) === null || _a === void 0 ? void 0 : _a.view_history) && !((_b = simulation_options.data) === null || _b === void 0 ? void 0 : _b.rt)) {
-              while (curr_page !== trial.pages.length) {
-                  const view_time = Math.round(this.jsPsych.randomization.sampleExGaussian(3000, 300, 1 / 300));
-                  view_history.push({ page_index: curr_page, viewing_time: view_time });
-                  rt += view_time;
-                  if (curr_page == 0 || !trial.allow_backward) {
+          const view_history = [];
+          while (curr_page !== trial.pages.length) {
+              const view_time = this.jsPsych.randomization.sampleExGaussian(3000, 300, 1 / 300);
+              view_history.push({ page_index: curr_page, viewing_time: view_time });
+              rt += view_time;
+              if (curr_page == 0 || !trial.allow_backward) {
+                  curr_page++;
+              }
+              else {
+                  if (this.jsPsych.randomization.sampleBernoulli(0.9) == 1) {
                       curr_page++;
                   }
                   else {
-                      if (this.jsPsych.randomization.sampleBernoulli(0.9) == 1) {
-                          curr_page++;
-                      }
-                      else {
-                          curr_page--;
-                      }
+                      curr_page--;
                   }
-              }
-          }
-          // if there is an RT but no view history, simulate a random walk through the pages
-          // that ends on the final page when the RT is reached
-          if (!((_c = simulation_options.data) === null || _c === void 0 ? void 0 : _c.view_history) && ((_d = simulation_options.data) === null || _d === void 0 ? void 0 : _d.rt)) {
-              rt = simulation_options.data.rt;
-              while (curr_page !== trial.pages.length) {
-                  view_history.push({ page_index: curr_page, viewing_time: null });
-                  if (curr_page == 0 || !trial.allow_backward) {
-                      curr_page++;
-                  }
-                  else {
-                      if (this.jsPsych.randomization.sampleBernoulli(0.9) == 1) {
-                          curr_page++;
-                      }
-                      else {
-                          curr_page--;
-                      }
-                  }
-              }
-              const avg_rt_per_page = simulation_options.data.rt / view_history.length;
-              let total_time = 0;
-              for (const page of view_history) {
-                  const t = Math.round(this.jsPsych.randomization.sampleExGaussian(avg_rt_per_page, avg_rt_per_page / 10, 1 / (avg_rt_per_page / 10)));
-                  page.viewing_time = t;
-                  total_time += t;
-              }
-              const diff = simulation_options.data.rt - total_time;
-              // remove equal diff from each page
-              const diff_per_page = Math.round(diff / view_history.length);
-              for (const page of view_history) {
-                  page.viewing_time += diff_per_page;
-              }
-          }
-          // if there is a view history but no RT, make the RT equal the sum of the view history
-          if (((_e = simulation_options.data) === null || _e === void 0 ? void 0 : _e.view_history) && !((_f = simulation_options.data) === null || _f === void 0 ? void 0 : _f.rt)) {
-              view_history = simulation_options.data.view_history;
-              rt = 0;
-              for (const page of simulation_options.data.view_history) {
-                  rt += page.viewing_time;
               }
           }
           const default_data = {

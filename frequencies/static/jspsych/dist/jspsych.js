@@ -3324,20 +3324,16 @@ var jsPsychModule = (function (exports) {
         drawProgressBar(msg) {
             document
                 .querySelector(".jspsych-display-element")
-                .insertAdjacentHTML("afterbegin", '<div id="jspsych-progressbar-container">' +
-                "<span>" +
-                msg +
-                "</span>" +
-                '<div id="jspsych-progressbar-outer">' +
-                '<div id="jspsych-progressbar-inner"></div>' +
-                "</div></div>");
+                .insertAdjacentHTML("afterbegin", '<div class="d-flex justify-content-center"><div class="progress my-2 w-50">' +
+                '<div id="progressbar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>' +
+                '</div></div>');
         }
         updateProgressBar() {
             this.setProgressBar(this.getProgress().percent_complete / 100);
         }
         setProgressBar(proportion_complete) {
             proportion_complete = Math.max(Math.min(1, proportion_complete), 0);
-            document.querySelector("#jspsych-progressbar-inner").style.width =
+            document.querySelector("#progressbar").style.width =
                 proportion_complete * 100 + "%";
             this.progress_bar_amount = proportion_complete;
         }

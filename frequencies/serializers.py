@@ -4,7 +4,7 @@ from .models import Stimulus, Form, Reply
 class StimulusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stimulus
-        fields = ['term']
+        fields = ['term', 'file_name']
 
 class FormSerializer(serializers.ModelSerializer):
     guid = serializers.CharField(validators=[])

@@ -205,7 +205,8 @@ var jsPsychImageButtonResponse = (function (jspsych) {
           }
           else {
               // display stimulus as an image element
-              html = '<img src="' + trial.stimulus + '" id="jspsych-image-button-response-stimulus">';
+              var image_html = "<div class='row'><div class='col-12 col-md-8 col-lg-6 mx-auto'><div class='ratio ratio-4x3'>";
+              image_html += '<img src="' + trial.stimulus + '" id="jspsych-image-button-response-stimulus">';
               //display buttons
               var buttons = [];
               if (Array.isArray(trial.button_html)) {
@@ -221,53 +222,29 @@ var jsPsychImageButtonResponse = (function (jspsych) {
                       buttons.push(trial.button_html);
                   }
               }
-              html += '<div id="jspsych-image-button-response-btngroup">';
+              image_html += "</div>";
+              image_html += '<div id="jspsych-image-button-response-btngroup" class="row">';
               for (var i = 0; i < trial.choices.length; i++) {
                   var str = buttons[i].replace(/%choice%/g, trial.choices[i]);
-                  html +=
-                      '<div class="jspsych-image-button-response-button" style="display: inline-block; margin:' +
-                          trial.margin_vertical +
-                          " " +
-                          trial.margin_horizontal +
-                          '" id="jspsych-image-button-response-button-' +
-                          i +
-                          '" data-choice="' +
-                          i +
-                          '">' +
-                          str +
-                          "</div>";
+                  image_html +=
+                  '<div class="col px-0"><div class="jspsych-image-button-response-button" id="jspsych-image-button-response-button-' +
+                      i +
+                      '" data-choice="' +
+                      i +
+                      '">' +
+                      str +
+                      "</div></div>";
               }
-              html += "</div>";
+              image_html += "</div>";
               // add prompt
               if (trial.prompt !== null) {
-                  html += trial.prompt;
+                  image_html += trial.prompt;
               }
+              image_html += "</div></div>";
               // update the page content
-              display_element.innerHTML = html;
+              display_element.innerHTML = image_html;
               // set image dimensions after image has loaded (so that we have access to naturalHeight/naturalWidth)
-              var img = display_element.querySelector("#jspsych-image-button-response-stimulus");
-              if (trial.stimulus_height !== null) {
-                  height = trial.stimulus_height;
-                  if (trial.stimulus_width == null && trial.maintain_aspect_ratio) {
-                      width = img.naturalWidth * (trial.stimulus_height / img.naturalHeight);
-                  }
-              }
-              else {
-                  height = img.naturalHeight;
-              }
-              if (trial.stimulus_width !== null) {
-                  width = trial.stimulus_width;
-                  if (trial.stimulus_height == null && trial.maintain_aspect_ratio) {
-                      height = img.naturalHeight * (trial.stimulus_width / img.naturalWidth);
-                  }
-              }
-              else if (!(trial.stimulus_height !== null && trial.maintain_aspect_ratio)) {
-                  // if stimulus width is null, only use the image's natural width if the width value wasn't set
-                  // in the if statement above, based on a specified height and maintain_aspect_ratio = true
-                  width = img.naturalWidth;
-              }
-              img.style.height = height.toString() + "px";
-              img.style.width = width.toString() + "px";
+              
           }
           // start timing
           var start_time = performance.now();
