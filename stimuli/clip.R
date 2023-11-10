@@ -1,6 +1,49 @@
-df = read.csv('terms.csv', sep = ',')
+lsu <- read.csv('lsu.csv')
+swow = read.csv('swow.csv')
+anew = read.csv('anew.csv')
+load('words_data.Rdata')
 
-df$ImageName <- fs::path_sanitize(paste(df$Term, "png", sep = '.'))
+df <- data.frame('Term' = union(lsu$S.Word, words_data$target))
+df$ImageName <- paste(
+  stringi::stri_trans_general(chartr(" ", "_", df$Term), "latin-ascii"),
+  "png", 
+  sep = '.'
+)
+
+print(
+  paste(
+    "Unique words in LSU dataset:",
+    length(unique(lsu$S.Word))
+  )
+)
+print(
+  paste(
+    "Unique words in Words dataset:",
+    length(unique(words_data$target))
+  )
+)
+print(
+  paste(
+    "Words in both LSU and Words dataset:",
+    length(intersect(unique(lsu$S.Word), words_data$target))
+  )
+)
+print(
+  paste(
+    "Words in both LSU and SWOW dataset:",
+    length(intersect(unique(lsu$S.Word), swow$response))
+  )
+)
+print(
+  paste(
+    "Words in both LSU and ANEW dataset:",
+    length(intersect(unique(lsu$S.Word), anew$S.Word))
+  )
+)
+
+# setdiff(unique(lsu$S.Word), intersect(unique(lsu$S.Word), anew$S.Word))
+# "coche" -> "auto"
+# anew$S.Word
 
 write.table(
  x = df[,c("Term", "ImageName")],
@@ -16,5 +59,5 @@ dir.create('../frequencies/static/terms')
 for (i in 1:nrow(df)) {
   term <- df[i,]$Term
   image <- df[i,]$ImageName
-  system(sprintf("convert -gravity center -pointsize 60 -extent 640x512 -font Liberation-Serif caption:%s ../frequencies/static/terms/%s", term, image))
+  system(sprintf("convert -gravity center -pointsize 60 -extent 640x512 -font Liberation-Serif caption:\"%s\" ../frequencies/static/terms/%s", term, image))
 }
