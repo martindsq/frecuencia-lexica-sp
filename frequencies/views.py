@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.templatetags.static import static
 from rest_framework.viewsets import ModelViewSet
-from .models import Form, Stimulus
+from .models import Form, Stimulus, experiment
 from .serializers import FormAndRepliesSerializer, StimulusSerializer
 from .permissions import IsAdminOrWriteOnly
 
@@ -59,6 +59,8 @@ def index(request):
     	'stimuli': {static('terms/' + stimulus.file_name): stimulus.file_name for stimulus in Stimulus.objects.all()
     	},
     	'mode': mode,
-    	'modes': Form.Mode
+    	'modes': Form.Mode,
+    	'timeout': 1 if mode == Form.Mode.ONLINE else experiment.timeout,
+    	'sample_size': 3 if mode == Form.Mode.DEBUG else experiment.sample_size
 	}
 	return HttpResponse(template.render(context, request))

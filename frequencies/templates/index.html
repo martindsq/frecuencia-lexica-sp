@@ -55,14 +55,10 @@
 
     // Video paths corresponding to the stimuli
     const images_mapper = {{ stimuli|safe }};
-    {% if mode == mode.DEBUG %}
-      const images = Object.keys(images_mapper).slice(0, 3);
-    {% else %}
-      const images = Object.keys(images_mapper);
-    {% endif %}
+    const images = Object.keys(images_mapper);
 
     // Timeout used (in milliseconds) to present the Finish button or end the experiment (when ONLINE)
-    const timeout = 60000 * 20;
+    const timeout = 60000 * {{ timeout }};
 
     // Image path corresponding to the fixation cross
     const fixation_cross = '{% static "cross.png" %}';
@@ -86,7 +82,6 @@
     };
     timeline.push(browser_check);
 
-    {% if not mode == modes.DEBUG %}
     const instructions = {
         type: jsPsychInstructions,
         pages: function() {
@@ -101,7 +96,7 @@
               <div class="col text-start">
                 <small>
                   <p class="lead">Este estudio lo realizan investigadores del Centro de Investigación Básica en Psicología de la Universidad de la República.</p>
-                  <p>La presente investigación tiene como objetivo <strong>conocer con que frecuencia usamos algunas palabras del español rioplatense</strong>. Si aceptas participar en la investigación, <strong>deberás puntuar una lista de palabras en español rioplatense de acuerdo a que tanto la usas en la vida cotidiana, la tarea tendrá una duración aproximada de 10 minutos y solamente registraremos las puntuaciones en una base de datos online.</strong></p>
+                  <p>La presente investigación tiene como objetivo <strong>conocer con que frecuencia usamos algunas palabras del español rioplatense</strong>. Si aceptas participar en la investigación, <strong>deberás puntuar una lista de {{ sample_size }} palabras en español rioplatense de acuerdo a que tanto la usas en la vida cotidiana, la tarea tendrá una duración máxima de {{ timeout }} minutos y solamente registraremos las puntuaciones en una base de datos online.</strong></p>
                 </small>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center py-5">
                   <div class="px-4 gap-3">
@@ -160,7 +155,7 @@
             <div class="row">
               <div class="col text-start">
                 <small>
-                  <p>En esta tarea queremos saber con qué frecuencia ves algunas señas en español rioplatense. Verás una lista de palabras y tendrás que puntuar, en una <strong>escala de 1 a 7</strong>, a cada seña de acuerdo a la cantidad de veces que has visto a otras personas usarla:</p>
+                  <p>En esta tarea queremos saber con qué frecuencia ves algunas palabras en español rioplatense. Verás una lista de palabras y tendrás que puntuar, en una <strong>escala de 1 a 7</strong>, a cada palabra de acuerdo a la cantidad de veces que has visto a otras personas usarla:</p>
                   <ul class="list-unstyled">
                     <li>El número 1 significa que <strong>nunca</strong> has visto esa palabra</li>
                     <li>El número 7 siginfica que ves la palabra <strong>casi todos los dias</strong></li>
@@ -193,7 +188,7 @@
                   </div>
                 </div>
                 <div>
-                  <p>¿Que tan seguido ves esta seña?</p>
+                  <p>¿Que tan seguido ves esta palabra?</p>
                 </div>
               </div>
             </div>
@@ -206,7 +201,6 @@
         button_label_previous: "Atrás"
     };
     timeline.push(instructions);
-    {% endif %}
 
     {% for step in survey_steps %}
       var survey = {
@@ -315,13 +309,17 @@
         // at the end of each trial, update the progress bar
         // based on the current value and the proportion to update for each trial
         var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
-        jsPsych.setProgressBar(curr_progress_bar_value + (1 / images.length));
+        jsPsych.setProgressBar(curr_progress_bar_value + (1 / {{ sample_size }}));
       }
     };
     const procedure = {
       timeline: [fixation, trial],
       timeline_variables: images.map(x => ({stimulus: [x]})),
-      randomize_order: true
+      randomize_order: true,
+      sample: {
+          type: 'without-replacement',
+          size: {{ sample_size }}
+      }
     };
     timeline.push(procedure);
 

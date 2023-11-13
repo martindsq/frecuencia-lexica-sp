@@ -1,7 +1,7 @@
 lsu <- read.csv('lsu.csv')
 swow = read.csv('swow.csv')
 anew = read.csv('anew.csv')
-load('words_data.Rdata')
+load('words_data.RData')
 
 df <- data.frame('Term' = union(lsu$S.Word, words_data$target))
 df$ImageName <- paste(
@@ -10,6 +10,12 @@ df$ImageName <- paste(
   sep = '.'
 )
 
+print(
+  paste(
+    "Words in LSU and Words datasets union:",
+    length(unique(df$Term))
+  )
+)
 print(
   paste(
     "Unique words in LSU dataset:",
