@@ -3,7 +3,9 @@ swow = read.csv('swow.csv')
 anew = read.csv('anew.csv')
 load('words_data.RData')
 
-df <- data.frame('Term' = union(lsu$S.Word, words_data$target))
+cleaned_words_data <- subset(words_data, target != "contrataria")
+
+df <- data.frame('Term' = union(lsu$S.Word, cleaned_words_data$target))
 df$ImageName <- paste(
   stringi::stri_trans_general(chartr(" ", "_", df$Term), "latin-ascii"),
   "png", 
@@ -25,13 +27,13 @@ print(
 print(
   paste(
     "Unique words in Words dataset:",
-    length(unique(words_data$target))
+    length(unique(cleaned_words_data$target))
   )
 )
 print(
   paste(
     "Words in both LSU and Words dataset:",
-    length(intersect(unique(lsu$S.Word), words_data$target))
+    length(intersect(unique(lsu$S.Word), cleaned_words_data$target))
   )
 )
 print(

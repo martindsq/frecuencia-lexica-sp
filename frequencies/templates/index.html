@@ -12,9 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="{% static 'jspsych/dist/jspsych.js' %}"></script>
     <script src="{% static 'jspsych/dist/plugin-instructions.js' %}"></script>
-    <script src="{% static 'jspsych/dist/plugin-external-html.js' %}"></script>
     <script src="{% static 'jspsych/dist/plugin-browser-check.js' %}"></script>
-    <script src="{% static 'jspsych/dist/plugin-survey.js' %}"></script>
     <script src="{% static 'jspsych/dist/plugin-survey-html-form.js' %}"></script>
     <script src="{% static 'jspsych/dist/plugin-image-button-response.js' %}"></script>
     <script src="{% static 'jspsych/dist/plugin-preload.js' %}"></script>
@@ -23,7 +21,6 @@
     <script src="{% static 'jspsych/dist/plugin-html-button-response.js' %}"></script>
     <link href="{% static 'jspsych/dist/jspsych.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/experiment.css' %}" rel="stylesheet" type="text/css" />
-    <link href="https://unpkg.com/@jspsych/plugin-survey@0.2.1/css/survey.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     {% if mode == modes.DEBUG %}
@@ -42,7 +39,10 @@
     </button>
     <div id="experimentPlaceholder" class="container"></div>
   </body>
+  {% csrf_token %}
   <script>
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
     const jsPsych = initJsPsych({
       display_element: 'experimentPlaceholder',
       on_finish: function(data) {
@@ -93,10 +93,10 @@
               <h1>Frecuencia Subjetiva en Español Rioplatense</h1>
             </div>
             <div class="row">
-              <div class="col text-start">
+              <div class="col-md-9 mx-auto text-start">
                 <small>
                   <p class="lead">Este estudio lo realizan investigadores del Centro de Investigación Básica en Psicología de la Universidad de la República.</p>
-                  <p>La presente investigación tiene como objetivo <strong>conocer con que frecuencia usamos algunas palabras del español rioplatense</strong>. Si aceptas participar en la investigación, <strong>deberás puntuar una lista de {{ sample_size }} palabras en español rioplatense de acuerdo a que tanto la usas en la vida cotidiana, la tarea tendrá una duración máxima de {{ timeout }} minutos y solamente registraremos las puntuaciones en una base de datos online.</strong></p>
+                  <p>La presente investigación tiene como objetivo <strong>conocer con que frecuencia usamos algunas palabras del español rioplatense</strong>. Si aceptas participar en la investigación, <strong>deberás puntuar una lista de {{ sample_size }} palabras en español rioplatense de acuerdo a que tanto la usas en la vida cotidiana, la tarea tendrá una duración máxima de {{ timeout }} minutos y solamente registramos las puntuaciones en una base de datos online.</strong></p>
                 </small>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center py-5">
                   <div class="px-4 gap-3">
@@ -119,7 +119,7 @@
               <h1>Consentimiento</h1>
             </div>
             <div class="row">
-              <div class="col text-start">
+              <div class="col-md-9 mx-auto text-start">
                 <small>
                   <ul class="list-unstyled">
                     <li>
@@ -153,12 +153,12 @@
               <h1>Instrucciones</h1>
             </div>
             <div class="row">
-              <div class="col text-start">
+              <div class="col-md-9 mx-auto text-start">
                 <small>
                   <p>En esta tarea queremos saber con qué frecuencia ves algunas palabras en español rioplatense. Verás una lista de palabras y tendrás que puntuar, en una <strong>escala de 1 a 7</strong>, a cada palabra de acuerdo a la cantidad de veces que has visto a otras personas usarla:</p>
                   <ul class="list-unstyled">
                     <li>El número 1 significa que <strong>nunca</strong> has visto esa palabra</li>
-                    <li>El número 7 siginfica que ves la palabra <strong>casi todos los dias</strong></li>
+                    <li>El número 7 significa que ves la palabra <strong>casi todos los dias</strong></li>
                   </ul>
                   <p>Por ejemplo, si ves a otras personas usar PAN muy seguido, entonces la calificarías con 6 o 7. Algunas palabras raras no ves tan seguido, en ese caso calificarías con 2 o 3.</p>
                   <p>No importa si no conoces el significado de la palabra, solo puntúa de acuerdo a que tantas veces has visto a otras personas usarla.</p>
@@ -212,7 +212,7 @@
               <h1>Formulario</h1>
             </div>
             <div class="row">
-              <div class="col text-start">
+              <div class="col-md-6 mx-auto text-start">
                 <div class="mb-3">
                   <label for="formControlInput" class="form-label">{{ step.label }}</label>
                   {% if step.type == 'text' %}
@@ -357,6 +357,7 @@
           var xhr = new XMLHttpRequest();
           xhr.open('POST', '{% url 'form-list' %}', true);
           xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.setRequestHeader('X-CSRFToken', csrftoken);
           xhr.send(JSON.stringify(json));
           xhr.onload = done
         } else {

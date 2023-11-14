@@ -60,7 +60,7 @@ def index(request):
     	},
     	'mode': mode,
     	'modes': Form.Mode,
-    	'timeout': 1 if mode == Form.Mode.ONLINE else experiment.timeout,
+    	'timeout': 1 if mode == Form.Mode.DEBUG else experiment.timeout,
     	'sample_size': 3 if mode == Form.Mode.DEBUG else experiment.sample_size
 	}
 	return HttpResponse(template.render(context, request))
