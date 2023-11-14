@@ -67,5 +67,5 @@ dir.create('../frequencies/static/terms')
 for (i in 1:nrow(df)) {
   term <- df[i,]$Term
   image <- df[i,]$ImageName
-  system(sprintf("convert -gravity center -pointsize 60 -extent 640x512 -font Liberation-Serif caption:\"%s\" ../frequencies/static/terms/%s", term, image))
+  system(sprintf("convert -gravity center -pointsize 60 -extent 640x512 -size 640x512 -font Liberation-Serif caption:\"%s\" ../frequencies/static/terms/%s", term, image))
 }
