@@ -4,7 +4,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.templatetags.static import static
 from rest_framework.viewsets import ModelViewSet
-from .models import Form, Stimulus, experiment
+from .apps import FrequenciesConfig
+from .models import Form, Stimulus
 from .serializers import FormAndRepliesSerializer, StimulusSerializer
 from .permissions import IsAdminOrWriteOnly
 
@@ -24,6 +25,8 @@ def index(request):
 	except ValueError:
 		mode = Form.Mode.ONLINE
 	
+	options = FrequenciesConfig.options
+
 	template = loader.get_template('index.html')
 	context = {
     	'survey_steps': [
@@ -60,7 +63,7 @@ def index(request):
     	},
     	'mode': mode,
     	'modes': Form.Mode,
-    	'timeout': 1 if mode == Form.Mode.DEBUG else experiment.timeout,
-    	'sample_size': 3 if mode == Form.Mode.DEBUG else experiment.sample_size
+    	'timeout': options.online_timeout if mode == Form.Mode.ONLINE else options.offline_timeout if mode == Form.Mode.OFFLINE else options.debug_timeout,
+    	'sample_size': options.online_sample_size if mode == Form.Mode.ONLINE else options.offline_sample_size if mode == Form.Mode.OFFLINE else options.debug_sample_size
 	}
 	return HttpResponse(template.render(context, request))
