@@ -22,15 +22,16 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-3. Create the database in Postgres
+3. Install [Postgres](https://www.postgresql.org/) and create the database:
 
 ```
+sudo apt install postgresql
 createdb martin		# Only necessary if martin doesn't exist yet
 sudo -u martin psql
 CREATE DATABASE frecuencialexicasp WITH OWNER martin;
 ```
 
-4. Fill the database:
+4. Fill the database
 
 ```
 python manage.py migrate
@@ -46,13 +47,19 @@ python manage.py runserver
 
 ## Re-generating the stimuli
 
-1. Place the stimuli in the static folder:
+1. Install the [image manipulation software suite](https://imagemagick.org/)
+
+```
+sudo apt install imagemagick
+```
+
+2. Place the stimuli in the static folder
 
 ```
 Rscript stimuli/clip.R
 ```
 
-2. Update the database
+3. Update the database
 
 ```
 python manage.py seed
