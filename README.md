@@ -2,9 +2,17 @@
 
 ## Running the experiment
 
-1. Activate the [virtual environment](https://docs.python.org/3/library/venv.html)
+1. Install the [package installer](https://pypi.org/project/pip/) and the [virtual environment module](https://docs.python.org/3/library/venv.html)
 
 ```
+sudo apt install python3-pip
+sudo apt install python3-venv
+```
+
+2. Create and activate the virtual environment
+
+```
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
