@@ -1,5 +1,0 @@
-- `anew.csv`: Words in the [Spanish adaptation of ANEW](https://doi.org/10.3758/BF03193031) dataset
-- `clip.R`: Script that generates the stimuli and place the results in `frequencies/static/terms`
-- `lsu.csv`: Words in the https://doi.org/10.3758/BF03193031 dataset
-- `swow.csv`: Words in the [Small World of Words Free Association Norms for Rioplatense Spanish](https://doi.org/10.31234/osf.io/w6hc8) dataset
-- `words_data.RData`: Words in the [Small World of Words Free Association Norms for Rioplatense Spanish](https://doi.org/10.31234/osf.io/w6hc8) subset with measures of lexical decision taks
