@@ -55,7 +55,7 @@ class ReplyInline(admin.TabularInline):
 class FormAdmin(admin.ModelAdmin):
     class Media:
         css = {
-            'all': ('admin.css', )
+            'all': ('css/admin.css', )
         }
     list_display = ('guid', 'test_mode', 'created_at')
     ordering = ('-created_at',)
