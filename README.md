@@ -50,6 +50,8 @@ CREATE DATABASE frecuencialexicasp WITH OWNER martin;
 4. Set-up the initial state of the database:
 
 ```
+python manage.py collectstatic
+python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py seed --mode=refresh
@@ -64,10 +66,10 @@ python manage.py seed --mode=refresh
 source .venv/bin/activate
 ```
 
-2. Start a development web server on your local machine:
+2. Start a web server on your local machine:
 
 ```
-python manage.py runserver
+gunicorn mysite.wsgi
 ```
 
 This will start a development server at [localhost](http://127.0.0.1:8000). 

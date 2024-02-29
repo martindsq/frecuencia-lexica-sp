@@ -37,6 +37,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('term', models.CharField(max_length=50, verbose_name='Term')),
+                ('file_name', models.CharField(max_length=50, verbose_name='Filename')),
             ],
             options={
                 'verbose_name': 'Stimulus',
